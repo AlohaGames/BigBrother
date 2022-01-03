@@ -1,0 +1,14 @@
+{
+  "name": "big-brother-interface",
+  "version": "1.0.0",
+  "description": "UI for big-brother application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "author": "COUTURIER Tristan",
+  "license": "ISC",
+  "dependencies": {
+    "serialport": "^9.2.8"
+  }
+}
