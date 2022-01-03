@@ -4,11 +4,13 @@
   "description": "UI for big-brother application",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "start": "node src/"
   },
   "author": "COUTURIER Tristan",
   "license": "ISC",
   "dependencies": {
+    "@influxdata/influxdb-client": "^1.21.0",
+    "@influxdata/influxdb-client-apis": "^1.21.0",
     "serialport": "^9.2.8"
   }
 }
