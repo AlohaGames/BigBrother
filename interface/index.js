@@ -37,8 +37,23 @@ async function main() {
   const parser = serialport.pipe(new Readline());
 
   parser.on("data", (data) => {
-    console.log(data);
+    if (isParsable(data)) {
+      const myData = JSON.parse(data);
+      console.log(myData);
+    } else {
+      console.log("Warning: Data not parsable !");
+    }
   });
+}
+
+// Verify if data are parsable using JSON.parse
+function isParsable(data) {
+  try {
+    JSON.parse(data);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 main();

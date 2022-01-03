@@ -1,0 +1,13 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+
+  config.vm.provision "shell", inline: <<-SHELL
+     # Install Docker
+     yum install -y yum-utils
+     yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+     yum install -y docker-ce docker-ce-cli containerd.io
+
+     # Post install
+     usermod -aG docker vagrant
+   SHELL
+end
