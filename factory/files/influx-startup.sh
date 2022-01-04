@@ -5,7 +5,7 @@
 # A bucket to receive telegraf data
 
 # If it does not work due to bad interpreter :
-# sed -i -e 's/\r$//'
+# sed -i -e 's/\r$//' influx-startup.sh
 
 influx setup -u tristan -p aBcJ45f5 -o aloha -b big-brother -r 0 -f
 
