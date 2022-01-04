@@ -7,17 +7,16 @@ const INFLUX_BUCKET = "big-brother";
 const INFLUX_URL = "http://192.168.33.10:8086";
 
 // https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token/
-const INFLUX_TOKEN =
-  "7Tx_TGfFg0VhRUrY3ALcSY-zS1s_eEWS_HBYzjyNpdRFLTrAPw5Kve4DL0lThfeaSEILIWNdYAu6-k-1MC4S1g==";
+const INFLUX_TOKEN = "INFLUXDB_TOKEN";
 
 const influxDB = new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN });
 
-function write() {
+function write(temperature) {
   const writeApi = influxDB.getWriteApi(INFLUX_ORG, INFLUX_BUCKET);
 
-  const point = new Point("temperature")
+  const point = new Point("heatSensor")
     .tag("sensor_id", "TLM010")
-    .floatField("value", 24);
+    .floatField("temperature", temperature);
 
   writeApi.writePoint(point);
 
