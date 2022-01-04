@@ -6,6 +6,7 @@ services:
       - "8086:8086"
     volumes:
       - ./influxdb2:/var/lib/influxdb2
+      - ./influx-startup.sh:/docker-entrypoint-initdb.d/influx-startup.sh
   grafana:
     image: grafana/grafana-oss:latest
     ports:
