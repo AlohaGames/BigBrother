@@ -1,5 +1,6 @@
-const Readline = require("@serialport/parser-readline");
-const SerialPort = require("serialport");
+import SerialPort from "serialport";
+import { write } from "./database/db";
+import { parsePoint } from "./database/parse-point";
 
 async function main() {
   // Get list of ports
@@ -34,26 +35,18 @@ async function main() {
   });
 
   // Use ReadLine parser to parse line by line using \n as delimiter
-  const parser = serialport.pipe(new Readline());
+  const parser = serialport.pipe(
+    new SerialPort.parsers.Readline({ delimiter: "\n", encoding: "utf8" })
+  );
 
-  parser.on("data", (data) => {
-    if (isParsable(data)) {
-      const myData = JSON.parse(data);
-      console.log(myData);
-    } else {
-      console.log("Warning: Data not parsable !");
+  parser.on("data", (data: string) => {
+    try {
+      const point = parsePoint(data);
+      write(point);
+    } catch (err) {
+      console.log(err);
     }
   });
-}
-
-// Verify if data are parsable using JSON.parse
-function isParsable(data) {
-  try {
-    JSON.parse(data);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 main();
