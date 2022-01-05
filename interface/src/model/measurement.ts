@@ -1,4 +1,4 @@
-export type Measurement = TemperatureMeasurement;
+export type Measurement = TemperatureMeasurement | LuminosityMeasurement;
 
 export interface BaseMeasurement {
   sensor_id: string;

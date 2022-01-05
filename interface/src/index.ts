@@ -1,6 +1,6 @@
 import SerialPort from "serialport";
 import { write } from "./database/db";
-import { parsePoint } from "./database/parse-point";
+import { parsePoint } from "./parse/parse-point";
 
 async function main() {
   // Get list of ports
