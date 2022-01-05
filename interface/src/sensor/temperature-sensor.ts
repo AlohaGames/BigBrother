@@ -1,30 +1,17 @@
+import { Sensor } from "./sensors";
 import { Point } from "@influxdata/influxdb-client";
-import { Sensor } from "../model/sensor";
-import { basePoint } from "../database/point-factory";
 import { parseNumber } from "../parse/parse-type";
-import { BaseMeasurement, TemperatureMeasurement } from "../model/measurement";
 
-function parse(
-  measurement: BaseMeasurement,
-  secondPart: string[]
-): TemperatureMeasurement {
+function parse(point: Point, secondPart: string[]): Point {
   const [temperature] = secondPart;
   const temperatureNumber = parseNumber(temperature);
 
-  return {
-    ...measurement,
-    temperature: temperatureNumber,
-  };
-}
-
-function toPoint(m: TemperatureMeasurement): Point {
-  return basePoint(m)
+  return point
     .measurement("heatSensor")
-    .floatField("temperature", m.temperature);
+    .floatField("temperature", temperatureNumber);
 }
 
-export const temperatureSensor: Sensor<TemperatureMeasurement> = {
+export const temperatureSensor: Sensor = {
   type: "temp",
   parse,
-  toPoint,
 };

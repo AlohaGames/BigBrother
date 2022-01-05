@@ -15,6 +15,6 @@ export function write(point: Point) {
   writeApi.writePoint(point);
 
   writeApi.close().then(() => {
-    console.log("WRITE FINISHED");
+    console.log("Write finish");
   });
 }

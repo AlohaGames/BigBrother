@@ -1,5 +1,11 @@
-import { temperatureSensor } from "./temperature-sensor";
+import { Point } from "@influxdata/influxdb-client";
 import { luminositySensor } from "./luminosity-sensor";
+import { temperatureSensor } from "./temperature-sensor";
 
-const sensors = [temperatureSensor, luminositySensor];
+export interface Sensor {
+  type: string;
+  parse: (point: Point, secondPart: string[]) => Point;
+}
+
+const sensors: Sensor[] = [temperatureSensor, luminositySensor];
 export default sensors;
