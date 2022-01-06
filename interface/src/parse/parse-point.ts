@@ -1,5 +1,5 @@
-import sensors from "../sensor/sensors";
 import { Point } from "@influxdata/influxdb-client";
+import parsers from "./parsers";
 
 export function parsePoint(data: string): Point {
   console.log(`Receive ${data}`);
@@ -10,11 +10,12 @@ export function parsePoint(data: string): Point {
 
   const [sensor_id, room_id, type] = firstPart;
 
-  const sensor = sensors.find((s) => s.type === type);
-  if (!sensor) {
-    throw new Error(`No parser for type ${type}`);
+  const parser = parsers.get(type);
+
+  if (!parser) {
+    throw new Error("No parser found for this type of data");
   }
 
-  const point = new Point().tag("sensor_id", sensor_id).tag("room_id", room_id);
-  return sensor.parse(point, secondPart);
+  const sensor = parser({ sensor_id, room_id }, secondPart);
+  return sensor.toPoint();
 }

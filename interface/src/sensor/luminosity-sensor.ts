@@ -1,17 +1,27 @@
-import { Sensor } from "./sensors";
 import { Point } from "@influxdata/influxdb-client";
+import { BaseSensor, Sensor } from "./sensor";
 import { parseNumber } from "../parse/parse-type";
 
-function parse(point: Point, secondPart: string[]): Point {
+export function parseLuminosity(
+  baseSensor: BaseSensor,
+  secondPart: string[]
+): LuminositySensor {
   const [luminosity] = secondPart;
   const luminosityNumber = parseNumber(luminosity);
 
-  return point
-    .measurement("luminositySensor")
-    .floatField("luminosity", luminosityNumber);
+  return new LuminositySensor(baseSensor, luminosityNumber);
 }
 
-export const luminositySensor: Sensor = {
-  type: "lux",
-  parse,
-};
+export class LuminositySensor extends Sensor {
+  name = "luminositySensor";
+  luminosity: number;
+
+  constructor(baseSensor: BaseSensor, luminosity: number) {
+    super(baseSensor);
+    this.luminosity = luminosity;
+  }
+
+  toPoint(): Point {
+    return super.toPoint().floatField("luminosity", this.luminosity);
+  }
+}
