@@ -1,17 +1,23 @@
-import { Sensor } from "./sensors";
+import { Sensor } from "./sensor";
 import { Point } from "@influxdata/influxdb-client";
 import { parseNumber } from "../parse/parse-type";
 
-function parse(point: Point, secondPart: string[]): Point {
-  const [temperature] = secondPart;
-  const temperatureNumber = parseNumber(temperature);
+export class TemperatureSensor extends Sensor {
+  name = "TemperatureSensor";
+  temperature?: number;
 
-  return point
-    .measurement("heatSensor")
-    .floatField("temperature", temperatureNumber);
+  parsePayload(payload: string[]): void {
+    const [temperature] = payload;
+    const temperatureNumber = parseNumber(temperature);
+
+    this.temperature = temperatureNumber;
+  }
+
+  action(): string | null | undefined {
+    return null;
+  }
+
+  toPoint(): Point {
+    return super.toPoint().floatField("temperature", this.temperature);
+  }
 }
-
-export const temperatureSensor: Sensor = {
-  type: "temp",
-  parse,
-};
