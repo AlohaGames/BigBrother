@@ -1,6 +1,6 @@
 import SerialPort from "serialport";
 import { write } from "./database/db";
-import { parsePoint } from "./parse/parse-point";
+import { parseSensor } from "./parse/parse-sensor";
 
 async function main() {
   // Get list of ports
@@ -14,6 +14,8 @@ async function main() {
   if (arduinoPorts.length <= 0) {
     throw new Error("No Arduino ports found !");
   }
+
+  console.log(`Found ${arduinoPorts.length} Arduino ports`);
 
   // Init Serial
   const arduinoPort = arduinoPorts[0];
@@ -40,9 +42,29 @@ async function main() {
   );
 
   parser.on("data", (data: string) => {
+    console.log(`Receive ${data}`);
+
     try {
-      const point = parsePoint(data);
-      write(point);
+      // Exemple : hello,S002,R001;world
+      const dataRegExp = new RegExp(/[a-z]*,S[0-9]*,R[0-9]*;.*/);
+
+      if (!data.match(dataRegExp)) {
+        throw new Error(`Data does not match format ${dataRegExp}`);
+      }
+
+      // Parse sensor based on received data
+      const sensor = parseSensor(data);
+
+      // Compute action and get response data
+      const response = sensor.action();
+
+      // Write point to database
+      write(sensor.toPoint());
+
+      // Send response back to arduino device
+      if (response) {
+        serialport.write(response);
+      }
     } catch (err) {
       console.log(err);
     }
