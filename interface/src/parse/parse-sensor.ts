@@ -2,6 +2,8 @@ import { Sensor } from "../sensor/sensor";
 import { DoorSensor } from "../sensor/door-sensor";
 import { LuminositySensor } from "../sensor/luminosity-sensor";
 import { TemperatureSensor } from "../sensor/temperature-sensor";
+import { MovementSensor } from "../sensor/movement-sensor";
+import { SoundSensor } from "../sensor/sound-sensor";
 
 export function parseSensor(data: string): Sensor {
   const [firstPartRaw, secondPartRaw] = data.split(";");
@@ -33,5 +35,11 @@ function sensorFactory(type: string) {
       return new LuminositySensor();
     case "temp":
       return new TemperatureSensor();
+    case "sound":
+      return new SoundSensor();
+    case "move":
+      return new MovementSensor();
+    default:
+      return null;
   }
 }

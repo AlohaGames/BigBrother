@@ -7,3 +7,15 @@ export function parseNumber(value: string) {
 
   return number;
 }
+
+export function parseBoolean(value: string) {
+  if (value === "true" || value === "1") {
+    return true;
+  }
+
+  if (value === "false" || value === "0") {
+    return false;
+  }
+
+  throw new Error(`${value} is not a valid boolean`);
+}

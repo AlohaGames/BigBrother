@@ -14,8 +14,9 @@
     "serialport": "^9.2.8"
   },
   "devDependencies": {
+    "@types/serialport": "^8.0.2",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.4",
-    "@types/serialport": "^8.0.2"
+    "dotenv": "^14.3.2"
   }
 }

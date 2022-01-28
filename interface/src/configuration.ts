@@ -1,9 +1,21 @@
-export const INFLUX_ORG = "aloha";
+import * as dotenv from "dotenv";
+dotenv.config({ path: __dirname + "/.env" });
 
-export const INFLUX_BUCKET = "big-brother";
+if (
+  !process.env.INFLUX_ORG ||
+  !process.env.INFLUX_BUCKET ||
+  !process.env.INFLUX_URL ||
+  !process.env.INFLUX_TOKEN
+) {
+  throw new Error("Missing configuration variable !!");
+}
+
+export const INFLUX_ORG: string = process.env.INFLUX_ORG;
+
+export const INFLUX_BUCKET: string = process.env.INFLUX_BUCKET;
 
 // https://docs.influxdata.com/influxdb/v2.1/reference/urls/
-export const INFLUX_URL = "http://192.168.33.10:8086";
+export const INFLUX_URL: string = process.env.INFLUX_URL;
 
 // https://docs.influxdata.com/influxdb/cloud/security/tokens/create-token/
-export const INFLUX_TOKEN = "INFLUXDB_TOKEN";
+export const INFLUX_TOKEN: string = process.env.INFLUX_TOKEN;
