@@ -18,6 +18,6 @@ export class MovementSensor extends Sensor {
   }
 
   toPoint(): Point {
-    return super.toPoint().floatField("movement", this.movement);
+    return super.toPoint().booleanField("movement", this.movement);
   }
 }

@@ -8,7 +8,7 @@ export function parseNumber(value: string) {
   return number;
 }
 
-export function parseBoolean(value: string) {
+export function parseBoolean(value: string): boolean {
   if (value === "true" || value === "1") {
     return true;
   }
@@ -17,5 +17,5 @@ export function parseBoolean(value: string) {
     return false;
   }
 
-  throw new Error(`${value} is not a valid boolean`);
+  throw new Error(`${value} is not a boolean`);
 }

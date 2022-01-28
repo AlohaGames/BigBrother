@@ -52,8 +52,11 @@ async function main() {
         throw new Error(`Data does not match format ${dataRegExp}`);
       }
 
+      // Remove line breaks (some troubles with Enora)
+      const dataCleaned = data.replace(/\r/g, "");
+
       // Parse sensor based on received data
-      const sensor = parseSensor(data);
+      const sensor = parseSensor(dataCleaned);
 
       // Compute action and get response data
       const response = sensor.action();
