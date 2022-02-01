@@ -8,6 +8,7 @@
 #include <Servo.h>
 #include <LiquidCrystal_I2C.h>
 #include <dht11.h>
+#include <SoftwareSerial.h>
 
 // Definition of the room
 #define ID_CARTE "S1"
@@ -41,11 +42,17 @@ MFRC522 mfrc522(RFID_SS_PIN, RFID_RST_PIN);   // Create MFRC522 instance
 MFRC522::MIFARE_Key key;
 String acceptedUsers[] = {
   "43 9B 72 0C",
-  "59 15 C5 B2"
+  "59 15 C5 B2",
+  "62 00 D2 5C"
 };
 
 // LCD
 LiquidCrystal_I2C lcd(0x27,16,2);
+
+// Bluetooth
+SoftwareSerial btMaster(3, 2); // RX, TX
+char myChar;
+
 
 void setup() {
   Serial.begin(9600);
@@ -61,6 +68,15 @@ void setup() {
   pinMode(SOUND_PIN, INPUT);    // Set sound sensor to input
   pinMode(DHT_PIN, INPUT);      // Set humidity and temperature sensor to input
   door.attach(DOOR_PIN);        // Set door pin
+
+  //Bluetooth
+  pinMode(2, OUTPUT);
+  pinMode(3, INPUT);
+  pinMode(4, OUTPUT);
+  
+  btMaster.begin(38400);
+
+  digitalWrite(4, HIGH);
 
   // LCD
   lcd.init();
@@ -84,23 +100,25 @@ void loop() {
   if (presenceValue == 1) {
     switchOnLights();
   }
-  sendMove(isLightsOn);
+  sendBluetooth(sendMove(isLightsOn));
 
   // Temperature and humidity sensor
   dht11 DHT = getDHTValues();
-  sendTemperature((float)DHT.temperature);
-  sendHumidity((float)DHT.humidity);
+  sendBluetooth(sendTemperature((float)DHT.temperature));
+  sendBluetooth(sendHumidity((float)DHT.humidity));
   
   // Luminosity
-  sendLuminosity(getLuminosityValue());
+  sendBluetooth(sendLuminosity(getLuminosityValue()));
 
   // Sound
-  sendSound(getSoundSensorValue());
+  sendBluetooth(sendSound(getSoundSensorValue()));
 
   // RFID
+  lcd.clear();
   String UID = getRFIDUID();
   if (UID != String("")) {
-    sendCardUID(UID);
+    sendBluetooth(sendCardUID(UID));
+
     
     // Servo
     if (isUserAccepted(UID)) {
@@ -118,6 +136,18 @@ void loop() {
 
   //Add delay
   delay(500);
+
+
+  while (btMaster.available()) {
+    myChar = btMaster.read();
+    Serial.print(myChar);
+  }
+
+  while (Serial.available()) {
+    myChar = Serial.read();
+    Serial.print(myChar); //echo
+    btMaster.print(myChar);
+  }
 }
 
 bool getPresenceSensorValue() {
@@ -182,7 +212,7 @@ bool isUserAccepted(String UID) {
 void openDoor() {
   // If the door is closed, open the door
   if (isDoorOpen == false) {
-    Serial.println("Opening the door");
+    // Serial.println("Opening the door");
     isDoorOpen = true;
     door.write(OPEN_ROTATION);
   }
@@ -195,7 +225,7 @@ void closeDoor() {
   // If the door is opened and 5 seconds pass since last detection, close the door
   if (isDoorOpen == true) {
     if( millis() - opened_door_timestamp > DOOR_DURATION ) {
-      Serial.println("Closing the door");
+      // Serial.println("Closing the door");
       door.write(CLOSE_ROTATION);
       isDoorOpen = false; 
     }
@@ -205,7 +235,7 @@ void closeDoor() {
 void switchOnLights() {
   // If the lights are off, switch on the lights
   if (isLightsOn == false) {
-    Serial.println("Switch on the lights");
+    // Serial.println("Switch on the lights");
     isLightsOn = true;
     digitalWrite(LIGHTS_PIN, isLightsOn);
   }
@@ -218,7 +248,7 @@ void switchOffLights() {
   // If the lights are on and 20 seconds pass since last detection, switch off the lights
   if (isLightsOn == true) {
     if( millis() - lights_on_timestamp > LIGHTS_DURATION ) {
-      Serial.println("Switch off the lights");
+      // Serial.println("Switch off the lights");
       isLightsOn = false; 
       digitalWrite(LIGHTS_PIN, isDoorOpen);
     }
@@ -228,41 +258,46 @@ void switchOffLights() {
 // Send temp value
 String sendTemperature(float temp){
   String to_send = "temp," + String(ID_CARTE) + "," + String(ROOM) + ";" + String(temp);
-  Serial.println(to_send);
+  // Serial.println(to_send);
   return to_send;
 }
 
 // Send humidity value
 String sendHumidity(float humi){
   String to_send = "humi," + String(ID_CARTE) + "," + String(ROOM) + ";" + String(humi);
-  Serial.println(to_send);
+  // Serial.println(to_send);
   return to_send;
 }
 
 // Send card UID
 String sendCardUID(String cardUID){
   String to_send = "door," + String(ID_CARTE) + "," + String(ROOM) + ";" + String(cardUID);
-  Serial.println(to_send);
+  // Serial.println(to_send);
   return to_send;
 }
 
 // Send lumen value
 String sendLuminosity(float lumen){
   String to_send = "lux," + String(ID_CARTE) + "," + String(ROOM) + ";" + String(lumen);
-  Serial.println(to_send);
+  // Serial.println(to_send);
   return to_send;
 }
 
 // Send sound value
 String sendSound(float sound){
   String to_send = "sound," + String(ID_CARTE) + "," + String(ROOM) + ";" + String(sound);
-  Serial.println(to_send);
+  // Serial.println(to_send);
   return to_send;
 }
 
 // Send move value
 String sendMove(bool movement){
   String to_send = "move," + String(ID_CARTE) + "," + String(ROOM) + ";" + String(movement);
-  Serial.println(to_send);
+  // Serial.println(to_send);
   return to_send;
+}
+
+void sendBluetooth(String text){
+  //Serial.println(text);
+  btMaster.println(text);
 }
