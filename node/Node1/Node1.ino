@@ -32,7 +32,7 @@ bool isDoorOpen;
 unsigned long opened_door_timestamp;
 
 // Lights
-#define LIGHTS_DURATION   3000 // Duration the lights will be on
+#define LIGHTS_DURATION   5000 // Duration the lights will be on
 bool isLightsOn;
 unsigned long lights_on_timestamp;
 
@@ -81,10 +81,10 @@ void setup() {
 void loop() {  
   // PIR Sensor
   int presenceValue = getPresenceSensorValue();
-  sendMove(presenceValue);
   if (presenceValue == 1) {
     switchOnLights();
   }
+  sendMove(isLightsOn);
 
   // Temperature and humidity sensor
   dht11 DHT = getDHTValues();
@@ -116,8 +116,8 @@ void loop() {
   closeDoor();
   switchOffLights();
 
-  // Add delay
-  delay(3000);
+  //Add delay
+  delay(500);
 }
 
 bool getPresenceSensorValue() {
@@ -232,7 +232,7 @@ String sendTemperature(float temp){
   return to_send;
 }
 
-// Send temp value
+// Send humidity value
 String sendHumidity(float humi){
   String to_send = "humi," + String(ID_CARTE) + "," + String(ROOM) + ";" + String(humi);
   Serial.println(to_send);
