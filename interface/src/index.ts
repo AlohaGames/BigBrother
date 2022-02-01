@@ -1,5 +1,7 @@
 import SerialPort from "serialport";
+import { LOG_ERROR, MQTT_SEND, WRITE_DATABASE } from "./configuration";
 import { write } from "./database/db";
+import { sendMqtt } from "./mqtt/send-mqtt";
 import { parseSensor } from "./parse/parse-sensor";
 
 async function main() {
@@ -62,14 +64,22 @@ async function main() {
       const response = sensor.action();
 
       // Write point to database
-      write(sensor.toPoint());
+      if (WRITE_DATABASE) {
+        write(sensor.toPoint());
+      }
+
+      if (MQTT_SEND) {
+        sendMqtt(JSON.stringify(sensor));
+      }
 
       // Send response back to arduino device
       if (response) {
         serialport.write(response);
       }
     } catch (err) {
-      console.log(err);
+      if (LOG_ERROR) {
+        console.log(err);
+      }
     }
   });
 }

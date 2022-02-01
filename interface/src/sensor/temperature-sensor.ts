@@ -3,7 +3,7 @@ import { Point } from "@influxdata/influxdb-client";
 import { parseNumber } from "../parse/parse-type";
 
 export class TemperatureSensor extends Sensor {
-  name = "TemperatureSensor";
+  name = "Temperature";
   temperature?: number;
 
   parsePayload(payload: string[]): void {

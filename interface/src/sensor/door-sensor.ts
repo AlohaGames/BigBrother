@@ -2,7 +2,7 @@ import { Point } from "@influxdata/influxdb-client";
 import { Sensor } from "./sensor";
 
 export class DoorSensor extends Sensor {
-  name = "DoorSensor";
+  name = "Door";
   card_id?: string;
 
   parsePayload(payload: string[]): void {
