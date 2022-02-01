@@ -3,7 +3,7 @@ import { Point } from "@influxdata/influxdb-client";
 import { parseBoolean } from "../parse/parse-type";
 
 export class MovementSensor extends Sensor {
-  name = "MovementSensor";
+  name = "Movement";
   movement?: boolean;
 
   parsePayload(payload: string[]): void {

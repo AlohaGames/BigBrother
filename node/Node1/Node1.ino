@@ -2,32 +2,11 @@
  * Created by Aloha Corp
  */
 
-/*
- * --------------------------------------------------------------------------------------------------------------------
- * Example to change UID of changeable MIFARE card.
- * --------------------------------------------------------------------------------------------------------------------
- * This is a MFRC522 library example; for further details and other examples see: https://github.com/miguelbalboa/rfid
- * 
- * This sample shows how to set the UID on a UID changeable MIFARE card.
- * NOTE: for more informations read the README.rst
- *
- * Typical pin layout used:
- * -----------------------------------------------------------------------------------------
- *             MFRC522      Arduino       Arduino   Arduino    Arduino          Arduino
- *             Reader/PCD   Uno           Mega      Nano v3    Leonardo/Micro   Pro Micro
- * Signal      Pin          Pin           Pin       Pin        Pin              Pin
- * -----------------------------------------------------------------------------------------
- * RST/Reset   RST          9             5         D9         RESET/ICSP-5     RST
- * SPI SS      SDA(SS)      10            53        D10        10               10
- * SPI MOSI    MOSI         11 / ICSP-4   51        D11        ICSP-4           16
- * SPI MISO    MISO         12 / ICSP-1   50        D12        ICSP-1           14
- * SPI SCK     SCK          13 / ICSP-3   52        D13        ICSP-3           15
- */
-
 // Librairies
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Servo.h>
+#include <LiquidCrystal_I2C.h>
 #include <dht11.h>
 
 // Definition of the room
@@ -44,7 +23,6 @@
 #define PHOTORES_PIN      A0    // Photoresistor
 #define SOUND_PIN         A1    // Soundsound sensor
 
-
 // Door - Servo motor
 #define CLOSE_ROTATION    0     // Rotation for servo to close the door
 #define OPEN_ROTATION     90    // Rotation for servo to open the door
@@ -54,7 +32,7 @@ bool isDoorOpen;
 unsigned long opened_door_timestamp;
 
 // Lights
-#define LIGHTS_DURATION   10000 // Duration the lights will be on
+#define LIGHTS_DURATION   5000 // Duration the lights will be on
 bool isLightsOn;
 unsigned long lights_on_timestamp;
 
@@ -66,6 +44,8 @@ String acceptedUsers[] = {
   "59 15 C5 B2"
 };
 
+// LCD
+LiquidCrystal_I2C lcd(0x27,16,2);
 
 void setup() {
   Serial.begin(9600);
@@ -82,6 +62,10 @@ void setup() {
   pinMode(DHT_PIN, INPUT);      // Set humidity and temperature sensor to input
   door.attach(DOOR_PIN);        // Set door pin
 
+  // LCD
+  lcd.init();
+  lcd.backlight();
+
   // Init variables
   door.write(CLOSE_ROTATION);
   digitalWrite(LIGHTS_PIN, LOW);
@@ -94,13 +78,13 @@ void setup() {
   }
 }
 
-void loop() {
+void loop() {  
   // PIR Sensor
   int presenceValue = getPresenceSensorValue();
-  sendMove(presenceValue);
   if (presenceValue == 1) {
     switchOnLights();
   }
+  sendMove(isLightsOn);
 
   // Temperature and humidity sensor
   dht11 DHT = getDHTValues();
@@ -121,12 +105,19 @@ void loop() {
     // Servo
     if (isUserAccepted(UID)) {
       openDoor();
+      lcd.setCursor(1,0);
+      lcd.print("Acces autorise");
+    }else{
+      lcd.setCursor(2,0);
+      lcd.print("Acces refuse");
     }
   }
 
   closeDoor();
   switchOffLights();
-  Serial.println();
+
+  //Add delay
+  delay(500);
 }
 
 bool getPresenceSensorValue() {
@@ -241,7 +232,7 @@ String sendTemperature(float temp){
   return to_send;
 }
 
-// Send temp value
+// Send humidity value
 String sendHumidity(float humi){
   String to_send = "humi," + String(ID_CARTE) + "," + String(ROOM) + ";" + String(humi);
   Serial.println(to_send);

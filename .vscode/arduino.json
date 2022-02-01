@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "utils/Test_LCD-I2C/Test_LCD-I2C.ino",
+    "port": "/dev/ttyACM0"
+}

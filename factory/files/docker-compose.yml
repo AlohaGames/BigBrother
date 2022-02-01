@@ -14,3 +14,5 @@ services:
     image: telegraf:latest
     volumes:
       - ./telegraf.conf:/etc/telegraf/telegraf.conf
+    depends_on:
+      - "influxdb"
