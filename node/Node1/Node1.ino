@@ -6,6 +6,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Servo.h>
+#include <LiquidCrystal_I2C.h>
 #include <dht11.h>
 
 // Definition of the room
@@ -21,7 +22,6 @@
 #define RFID_SS_PIN       53    // RFID SS pin - check above documentation for more details
 #define PHOTORES_PIN      A0    // Photoresistor
 #define SOUND_PIN         A1    // Soundsound sensor
-
 
 // Door - Servo motor
 #define CLOSE_ROTATION    0     // Rotation for servo to close the door
@@ -44,6 +44,9 @@ String acceptedUsers[] = {
   "59 15 C5 B2"
 };
 
+// LCD
+LiquidCrystal_I2C lcd(0x27,16,2);
+
 void setup() {
   Serial.begin(9600);
 
@@ -59,6 +62,10 @@ void setup() {
   pinMode(DHT_PIN, INPUT);      // Set humidity and temperature sensor to input
   door.attach(DOOR_PIN);        // Set door pin
 
+  // LCD
+  lcd.init();
+  lcd.backlight();
+
   // Init variables
   door.write(CLOSE_ROTATION);
   digitalWrite(LIGHTS_PIN, LOW);
@@ -71,7 +78,7 @@ void setup() {
   }
 }
 
-void loop() {
+void loop() {  
   // PIR Sensor
   int presenceValue = getPresenceSensorValue();
   sendMove(presenceValue);
@@ -98,12 +105,19 @@ void loop() {
     // Servo
     if (isUserAccepted(UID)) {
       openDoor();
+      lcd.setCursor(1,0);
+      lcd.print("Acces autorise");
+    }else{
+      lcd.setCursor(2,0);
+      lcd.print("Acces refuse");
     }
   }
 
   closeDoor();
   switchOffLights();
-  Serial.println();
+
+  // Add delay
+  delay(3000);
 }
 
 bool getPresenceSensorValue() {
