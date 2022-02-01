@@ -32,7 +32,7 @@ bool isDoorOpen;
 unsigned long opened_door_timestamp;
 
 // Lights
-#define LIGHTS_DURATION   10000 // Duration the lights will be on
+#define LIGHTS_DURATION   3000 // Duration the lights will be on
 bool isLightsOn;
 unsigned long lights_on_timestamp;
 
