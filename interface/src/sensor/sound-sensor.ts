@@ -3,7 +3,7 @@ import { Sensor } from "./sensor";
 import { parseNumber } from "../parse/parse-type";
 
 export class SoundSensor extends Sensor {
-  name = "SoundSensor";
+  name = "Sound";
   sound?: number;
 
   parsePayload(payload: string[]): void {

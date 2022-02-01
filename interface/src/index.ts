@@ -1,4 +1,5 @@
 import SerialPort from "serialport";
+import { LOG_ERROR, WRITE_DATABASE } from "./configuration";
 import { write } from "./database/db";
 import { parseSensor } from "./parse/parse-sensor";
 
@@ -62,14 +63,18 @@ async function main() {
       const response = sensor.action();
 
       // Write point to database
-      write(sensor.toPoint());
+      if (WRITE_DATABASE) {
+        write(sensor.toPoint());
+      }
 
       // Send response back to arduino device
       if (response) {
         serialport.write(response);
       }
     } catch (err) {
-      console.log(err);
+      if (LOG_ERROR) {
+        console.log(err);
+      }
     }
   });
 }
