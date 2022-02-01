@@ -9,6 +9,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <dht11.h>
 #include <SoftwareSerial.h>
+#include "BluetoothMgr.h"
 
 // Definition of the room
 #define ID_CARTE "S1"
@@ -50,7 +51,7 @@ String acceptedUsers[] = {
 LiquidCrystal_I2C lcd(0x27,16,2);
 
 // Bluetooth
-SoftwareSerial btMaster(3, 2); // RX, TX
+BluetoothMgr btMaster; // RX, TX
 char myChar;
 
 
@@ -69,14 +70,7 @@ void setup() {
   pinMode(DHT_PIN, INPUT);      // Set humidity and temperature sensor to input
   door.attach(DOOR_PIN);        // Set door pin
 
-  //Bluetooth
-  pinMode(2, OUTPUT);
-  pinMode(3, INPUT);
-  pinMode(4, OUTPUT);
-  
-  btMaster.begin(38400);
-
-  digitalWrite(4, HIGH);
+  btMaster.init();
 
   // LCD
   lcd.init();
@@ -299,5 +293,5 @@ String sendMove(bool movement){
 
 void sendBluetooth(String text){
   //Serial.println(text);
-  btMaster.println(text);
+  btMaster.sendCommand(text);
 }
