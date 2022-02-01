@@ -11,12 +11,13 @@
   "dependencies": {
     "@influxdata/influxdb-client": "^1.21.0",
     "@influxdata/influxdb-client-apis": "^1.21.0",
+    "mqtt": "^4.3.4",
     "serialport": "^9.2.8"
   },
   "devDependencies": {
     "@types/serialport": "^8.0.2",
+    "dotenv": "^14.3.2",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.4",
-    "dotenv": "^14.3.2"
+    "typescript": "^4.5.4"
   }
 }
