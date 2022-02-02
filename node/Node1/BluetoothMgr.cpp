@@ -22,26 +22,27 @@ void BluetoothMgr::init()
 
     this->setTimeout(1000);
 
-    sendCommand("AT+RESET");
+    this->sendCommand("AT+RESET");
     logError(this->readString());
 
-    sendCommand("AT+ROLE=1");
-
-    logError(this->readString());
-
-    sendCommand("AT+CMODE=0");
+    this->sendCommand("AT+ROLE=1");
 
     logError(this->readString());
 
-    sendCommand("AT+BIND=98D3,32,10FE28");
+    this->sendCommand("AT+CMODE=0");
 
     logError(this->readString());
 
-    sendCommand("AT+INIT");
+    this->sendCommand("AT+BIND=98D3,B1,FD9089");
+    //sendCommand("AT+BIND=98D3,32,10FE28");
 
     logError(this->readString());
 
-    sendCommand("AT+STATE");
+    this->sendCommand("AT+INIT");
+
+    logError(this->readString());
+
+    this->sendCommand("AT+STATE");
 
     logError(this->readString());
 

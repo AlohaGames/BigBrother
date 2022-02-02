@@ -43,6 +43,7 @@ MFRC522 mfrc522(RFID_SS_PIN, RFID_RST_PIN);   // Create MFRC522 instance
 MFRC522::MIFARE_Key key;
 String acceptedUsers[] = {
   "43 9B 72 0C",
+  "59 15 C5 B2",
   "62 00 D2 5C"
 };
 
@@ -55,7 +56,26 @@ char myChar;
 
 
 void setup() {
+  // Setup Bluetooth
   Serial.begin(9600);
+
+  Serial1.begin(38400);
+
+  btMaster.init();
+
+  delay(1000);
+
+  digitalWrite(8, HIGH);
+
+  Serial.setTimeout(1000);
+
+  sendCommand("AT+RESET");
+
+  sendCommand("AT+ROLE=0");
+
+  sendCommand("AT+CMODE=0");
+
+
 
   // RFID
   SPI.begin();         // Init SPI bus
@@ -109,17 +129,19 @@ void loop() {
   // RFID
   lcd.clear();
   String UID = getRFIDUID();
-  if (UID != String("")) {    
+  if (UID != String("")) {
+
+    
     // Servo
     if (isUserAccepted(UID)) {
       openDoor();
-      sendBluetooth(sendCardUID(UID) + ",true");
       lcd.setCursor(1,0);
       lcd.print("Acces autorise");
+      sendBluetooth(sendCardUID(UID) + ",true");
     }else{
-      sendBluetooth(sendCardUID(UID) + ",false");
       lcd.setCursor(2,0);
       lcd.print("Acces refuse");
+      sendBluetooth(sendCardUID(UID) + ",false");
     }
   }
 
@@ -127,18 +149,30 @@ void loop() {
   switchOffLights();
 
   //Add delay
-  delay(500);
+  delay(100);
 
+  while (Serial1.available()){
+    //String str = Serial1.readStringUntil('\n') + "\n";
+    myChar = Serial1.read();
+    Serial.print(myChar); //echo
+    btMaster.write(myChar);
+  }
+
+  
+  delay(100);
 
   while (btMaster.available()) {
     myChar = btMaster.read();
     Serial.print(myChar);
   }
 
+  
+  delay(500);
+
   while (Serial.available()) {
     myChar = Serial.read();
-    Serial.print(myChar); //echo
-    btMaster.print(myChar);
+    //Serial.print(myChar); //echo
+    btMaster.write(myChar);
   }
 }
 
@@ -292,4 +326,11 @@ String sendMove(bool movement){
 void sendBluetooth(String text){
   //Serial.println(text);
   btMaster.sendCommand(text);
+}
+
+void sendCommand(const String &command)
+{
+    String tmp = command + "\r\n";
+    //log("Send command: " + command);
+    Serial1.write(tmp.c_str());
 }
