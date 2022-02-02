@@ -110,16 +110,15 @@ void loop() {
   // RFID
   lcd.clear();
   String UID = getRFIDUID();
-  if (UID != String("")) {
-    sendBluetooth(sendCardUID(UID));
-
-    
+  if (UID != String("")) {    
     // Servo
     if (isUserAccepted(UID)) {
       openDoor();
+      sendBluetooth(sendCardUID(UID) + ",true");
       lcd.setCursor(1,0);
       lcd.print("Acces autorise");
     }else{
+      sendBluetooth(sendCardUID(UID) + ",false");
       lcd.setCursor(2,0);
       lcd.print("Acces refuse");
     }
