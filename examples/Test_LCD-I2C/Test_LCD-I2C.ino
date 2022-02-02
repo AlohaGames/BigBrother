@@ -10,7 +10,6 @@ void setup() {
 
 void loop() {
   lcd.clear();
-  
 
   int randomNum = random(0, 2);
   Serial.println(randomNum);

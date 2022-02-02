@@ -2,6 +2,28 @@
  * Created by Aloha Corp
  */
 
+/*
+ * --------------------------------------------------------------------------------------------------------------------
+ * Example to change UID of changeable MIFARE card.
+ * --------------------------------------------------------------------------------------------------------------------
+ * This is a MFRC522 library example; for further details and other examples see: https://github.com/miguelbalboa/rfid
+ * 
+ * This sample shows how to set the UID on a UID changeable MIFARE card.
+ * NOTE: for more informations read the README.rst
+ *
+ * Typical pin layout used:
+ * -----------------------------------------------------------------------------------------
+ *             MFRC522      Arduino       Arduino   Arduino    Arduino          Arduino
+ *             Reader/PCD   Uno           Mega      Nano v3    Leonardo/Micro   Pro Micro
+ * Signal      Pin          Pin           Pin       Pin        Pin              Pin
+ * -----------------------------------------------------------------------------------------
+ * RST/Reset   RST          9             5         D9         RESET/ICSP-5     RST
+ * SPI SS      SDA(SS)      10            53        D10        10               10
+ * SPI MOSI    MOSI         11 / ICSP-4   51        D11        ICSP-4           16
+ * SPI MISO    MISO         12 / ICSP-1   50        D12        ICSP-1           14
+ * SPI SCK     SCK          13 / ICSP-3   52        D13        ICSP-3           15
+ */
+
 // Librairies
 #include <SPI.h>
 #include <MFRC522.h>
@@ -10,7 +32,7 @@
 
 // Definition of the room
 #define ID_CARTE "S1"
-#define ROOM "R1"
+#define ROOM "R2"
 
 // Definition of pins
 #define RFID_RST_PIN      5     // RFID RST pin - check above documentation for more details
@@ -41,8 +63,10 @@ MFRC522 mfrc522(RFID_SS_PIN, RFID_RST_PIN);   // Create MFRC522 instance
 MFRC522::MIFARE_Key key;
 String acceptedUsers[] = {
   "43 9B 72 0C",
-  "59 15 C5 B2"
+  "59 15 C5 B1",
+  "03 21 18 0B"
 };
+
 
 void setup() {
   Serial.begin(9600);
@@ -92,6 +116,9 @@ void loop() {
 
   // RFID
   String UID = getRFIDUID();
+  Serial.println("----------------------");
+  Serial.println(UID);
+  Serial.println("----------------------");
   if (UID != String("")) {
     sendCardUID(UID);
     
