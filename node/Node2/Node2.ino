@@ -12,8 +12,8 @@
 #include "BluetoothMgr.h"
 
 // Definition of the room
-#define ID_CARTE "S1"
-#define ROOM "R1"
+#define ID_CARTE "S2"
+#define ROOM "R2"
 
 // Definition of pins
 #define RFID_RST_PIN      5     // RFID RST pin - check above documentation for more details
@@ -43,7 +43,7 @@ MFRC522 mfrc522(RFID_SS_PIN, RFID_RST_PIN);   // Create MFRC522 instance
 MFRC522::MIFARE_Key key;
 String acceptedUsers[] = {
   "43 9B 72 0C",
-  "62 00 D2 5C"
+  "22 05 D2 5C"
 };
 
 // LCD
